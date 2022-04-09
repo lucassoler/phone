@@ -11,7 +11,7 @@ export class FakeChannels implements Channels {
         return Promise.resolve();
     }
 
-    originate(channel: Channel): Promise<void> {
+    dial(channel: Channel): Promise<void> {
         this.originatedChannels.push(channel);
         return Promise.resolve();
     }

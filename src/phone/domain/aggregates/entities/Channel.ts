@@ -15,8 +15,8 @@ export class Channel {
         return new Channel(number, channelId);
     }
 
-    async originate(channels: Channels): Promise<void> {
-        await channels.originate(this);
+    async dial(channels: Channels): Promise<void> {
+        await channels.dial(this);
     }
 
     async hangUp(channels: Channels): Promise<void> {
@@ -25,10 +25,13 @@ export class Channel {
 }
 
 
+
+
 export enum ChannelStates {
     Init,
     Originated,
-    HungUp
+    HungUp,
+    Answered
 }
 
 export class ChannelId {

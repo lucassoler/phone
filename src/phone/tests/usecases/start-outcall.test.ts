@@ -13,14 +13,14 @@ describe('start an outcall', () => {
     let phoneNumberFactory: FakePhoneNumberFactory;
     let uuidGenerator: FakeUuidGenerator;
     let repository: CallRepositoryInMemory;
-    let channels: FakeChannels
+    let channels: FakeChannels;
 
     beforeEach(() => {
         phoneNumberFactory = new FakePhoneNumberFactory();
         uuidGenerator = new FakeUuidGenerator();
-        channels = new FakeChannels()
+        channels = new FakeChannels();
         repository = new CallRepositoryInMemory(DEFAULT_ID, channels);
-        uuidGenerator.next(DEFAULT_CHANNEL_ID.id);
+        uuidGenerator.next(DEFAULT_ID.id);
     });
 
     test('start an outcall', async () => {

@@ -19,7 +19,7 @@ export class CallRepositoryInMemory implements CallRepository {
     }
 
     byId(callId: CallId): Promise<Outcall> {
-        const events = this.events.filter(x => x.id.sameAs(callId));
+        const events = this.events.filter(x => x.id.sameAs(callId.id));
         if (events.length == 0) throw new CallNotFoundException(callId);
         const call = Outcall.rehydrate(events, this.channels);
         return Promise.resolve(call);

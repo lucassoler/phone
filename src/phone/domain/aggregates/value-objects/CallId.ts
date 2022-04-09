@@ -10,7 +10,7 @@ export class CallId {
         return new CallId(callId);
     }
 
-    sameAs(idToCompare: CallId): boolean {
-        return this.id == idToCompare.id;
+    sameAs(idToCompare: string): boolean {
+        return this.id == idToCompare;
     }
 }

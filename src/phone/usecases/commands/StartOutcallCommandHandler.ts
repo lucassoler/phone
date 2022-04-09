@@ -23,12 +23,13 @@ export class StartOutcallCommandHandler implements CommandHandler {
     }
 
     private initiateOutcall(command: StartOutcallCommand) {
+        const callId = this.repository.nextCallId();
         const customer = Channel.from(
             PhoneNumber.Generate(this.phoneNumberFactory, command.customer), 
-            ChannelId.from(this.uuidGenerator.generate())
+            ChannelId.from(callId.id)
         );
         
-        return Outcall.from(this.repository.nextCallId(), customer, this.channels);
+        return Outcall.from(callId, customer, this.channels);
     }
 }
 

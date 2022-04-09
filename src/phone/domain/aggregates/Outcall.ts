@@ -1,5 +1,6 @@
 import { Channels } from "../services/Channels";
 import { Channel, ChannelStates } from "./entities/Channel";
+import { ChannelAnswered } from "./events/ChannelAnswered";
 import { ChannelHungUp } from "./events/ChannelHungUp";
 import { ChannelOriginated } from "./events/ChannelOriginated";
 import { OutcallEnded } from "./events/OutcallEnded";
@@ -50,6 +51,8 @@ export class Outcall {
                 this.applyOutcallEndedEvent(event);
             } else if (event instanceof ChannelHungUp) {
                 this.applyChannelHungUpEvent(event);
+            } else if (event instanceof ChannelAnswered) {
+                this.applyChannelAnsweredEvent(event);
             }
         });
         this.events = events;
@@ -68,6 +71,10 @@ export class Outcall {
         this.customer.state = ChannelStates.HungUp;
     }
 
+    applyChannelAnsweredEvent(event: ChannelAnswered) {
+        this.customer.state = ChannelStates.Answered;
+    }
+
     applyOutcallEndedEvent(event: OutcallEnded) {
         this.state = CallStates.HungUp;
     }
@@ -81,7 +88,7 @@ export class Outcall {
     }
 
     async start(): Promise<void> {
-        await this.customer.originate(this.channels);
+        await this.customer.dial(this.channels);
         const event = new ChannelOriginated(this.id, this.customer);
         this.uncommitedEvents.push(event);
         this.applyChannelOriginatedEvent(event);
@@ -98,6 +105,12 @@ export class Outcall {
         await this.customer.hangUp(this.channels);
         const event = new ChannelHungUp(this.id, this.customer);
         this.applyChannelHungUpEvent(event);
+        this.uncommitedEvents.push(event);
+    }
+
+    answerCustomer() {
+        const event = new ChannelAnswered(this.id, this.customer);
+        this.applyChannelAnsweredEvent(event);
         this.uncommitedEvents.push(event);
     }
 };
