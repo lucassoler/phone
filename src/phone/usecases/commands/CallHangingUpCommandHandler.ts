@@ -1,7 +1,6 @@
 import { Command } from "../../../common/command";
 import { CommandHandler } from "../../../common/commandHandler";
 import { CallId } from "../../domain/aggregates/value-objects/CallId";
-import { CallAlreadyHungUpException } from "../../domain/exceptions/CallAlreadyHungUpException";
 import { CallRepository } from "../../domain/repositories/callRepository";
 
 export class CallHangingUpCommandHandler implements CommandHandler {
@@ -13,7 +12,6 @@ export class CallHangingUpCommandHandler implements CommandHandler {
     
     async handle(command: CallHangingUpCommand): Promise<void> {
         const call = await this.repository.byId(CallId.from(command.callId));
-        if (call.isHangUp()) throw new CallAlreadyHungUpException(call.id);
         await call.hangUp();
         await this.repository.save(call);
     }

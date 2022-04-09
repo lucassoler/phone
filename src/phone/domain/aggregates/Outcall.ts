@@ -1,3 +1,5 @@
+import { CallAlreadyHungUpException } from "../exceptions/CallAlreadyHungUpException";
+import { ChannelAlreadyAnsweredException } from "../exceptions/ChannelAlreadyAnsweredException";
 import { Channels } from "../services/Channels";
 import { Channel, ChannelStates } from "./entities/Channel";
 import { ChannelAnswered } from "./events/ChannelAnswered";
@@ -95,6 +97,7 @@ export class Outcall {
     }
 
     async hangUp(): Promise<void> {
+        if (this.isHangUp()) throw new CallAlreadyHungUpException(this.id);
         await this.closeCustomerChannel();
         const event = new OutcallEnded(this.id);
         this.applyOutcallEndedEvent(event);
@@ -109,6 +112,8 @@ export class Outcall {
     }
 
     answerCustomer() {
+        if (this.isHangUp()) throw new CallAlreadyHungUpException(this.id);
+        if (this.customer.state === ChannelStates.Answered) throw new ChannelAlreadyAnsweredException(this.id, this.customer.channelId);
         const event = new ChannelAnswered(this.id, this.customer);
         this.applyChannelAnsweredEvent(event);
         this.uncommitedEvents.push(event);

@@ -23,20 +23,31 @@ describe('start an outcall', () => {
         uuidGenerator.next(DEFAULT_ID.id);
     });
 
-    test('start an outcall', async () => {
+    test('should persist an outcall', async () => {
         await createHandler().handle(createCommand());
         await verifyOutcallStarted(DEFAULT_ID);
     });
 
-    test('start an outcall should originate customer channel', async () => {
+    test('should create a customer channel with the same id as the outcall', async () => {
+        await createHandler().handle(createCommand());
+        await verifyCustomerChannelId(DEFAULT_ID);
+    });
+
+    test('should originate customer channel', async () => {
         await createHandler().handle(createCommand());
         verifyCustomerChannelHasBeenOriginated(DEFAULT_CHANNEL_ID);
     });
 
-    test('start an outcall with an invalid phone number', async () => {
-        phoneNumberFactory.throwError(new InvalidPhoneNumber("+00"));
-        await expect(createHandler().handle(createCommand("+00"))).rejects.toThrowError(new InvalidPhoneNumber("+00"));
+    describe('throw an error', () => {
+        test('with an invalid phone number', async () => {
+            phoneNumberFactory.throwError(new InvalidPhoneNumber("+00"));
+            await expect(createHandler().handle(createCommand("+00"))).rejects.toThrowError(new InvalidPhoneNumber("+00"));
+        });
     });
+
+    function verifyCustomerChannelId(callId: CallId) {
+        expect(channels.originatedChannels[0].channelId.id).toStrictEqual(callId.id);
+    }
 
     function verifyCustomerChannelHasBeenOriginated(channelId: ChannelId) {
         expect(channels.originatedChannels[0].channelId).toStrictEqual(channelId);

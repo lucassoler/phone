@@ -18,23 +18,13 @@ describe('Hanging up an outcall', () => {
         initCall();
     })
 
-    test('outcall does not exists', async () => {
-        removeCalls();
-        await expect(createHandler().handle(createCommand())).rejects.toThrow(new CallNotFoundException(DEFAULT_ID));
-    });
 
-
-    test('outcall hanging up', async () => {
+    test('should persist outcall state', async () => {
         await createHandler().handle(createCommand());
         await verifyCallIsHungUp(DEFAULT_ID);
     });
 
-    test('call was already hang up', async () => {
-        initCall(true);
-        await expect(createHandler().handle(createCommand())).rejects.toThrowError(new CallAlreadyHungUpException(DEFAULT_ID));
-    });
-
-    test('hanging up an outcall should update customer channel state', async () => {
+    test('should update customer channel state to hung up', async () => {
         await createHandler().handle(createCommand());
         await verifyCustomerChannelStateIsHungUp(DEFAULT_ID);
     });
@@ -42,6 +32,18 @@ describe('Hanging up an outcall', () => {
     test('hanging up an outcall should close customer channel', async () => {
         await createHandler().handle(createCommand());
         verifyCustomerChannelHasBeenClosed(DEFAULT_CHANNEL_ID);
+    });
+
+    describe('throw an error', () => {
+        test('on an non-existing outcall', async () => {
+            removeCalls();
+            await expect(createHandler().handle(createCommand())).rejects.toThrow(new CallNotFoundException(DEFAULT_ID));
+        });
+
+        test('on an outcall already hung up', async () => {
+            initCall(true);
+            await expect(createHandler().handle(createCommand())).rejects.toThrowError(new CallAlreadyHungUpException(DEFAULT_ID));
+        });
     });
 
     function verifyCustomerChannelHasBeenClosed(channelId: ChannelId) {
