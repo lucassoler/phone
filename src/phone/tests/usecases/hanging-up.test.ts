@@ -5,7 +5,7 @@ import { CallAlreadyHungUpException } from "../../domain/exceptions/CallAlreadyH
 import { CallNotFoundException } from "../../domain/exceptions/CallNotFoundException";
 import { CallRepositoryInMemory } from "../../infrastructure/repositories/callRepositoryInMemory";
 import { FakeChannels } from "../../infrastructure/services/FakeChannels";
-import { CallHangingUpCommandHandler, CallHangingUpCommand } from "../../usecases/commands/callHangingUpCommandHandler";
+import { CallHangingUpCommandHandler, CallHangingUpCommand } from "../../usecases/commands/CallHangingUpCommandHandler";
 import { An } from "../helpers/An";
 import { DEFAULT_ID } from "../helpers/OutcallBuilder";
 
@@ -21,6 +21,7 @@ describe('Hanging up an outcall', () => {
     test('outcall does not exists', async () => {
         await expect(createHandler().handle(createCommand())).rejects.toThrow(new CallNotFoundException(CallId.from(DEFAULT_ID)));
     });
+
 
     test('outcall hanging up', async () => {
         const call = initCall();

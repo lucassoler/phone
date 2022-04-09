@@ -1,3 +1,4 @@
+import { InvalidPhoneNumber } from "../../domain/exceptions/InvalidPhoneNumber";
 import { PhoneNumberFactory } from "../../domain/factories/phoneNumberFactory";
 import { AwesomePhoneNumberFactory } from "../../infrastructure/factories/awesomePhoneNumberFactory";
 
@@ -8,12 +9,11 @@ describe('Phone number value object', () => {
     
     beforeEach(() => {
         phoneNumberFactory = new AwesomePhoneNumberFactory()
-    })
-
+    });
 
     test("with an invalid number", () => {
-        expect(() => phoneNumberFactory.compose(INVALID_NUMBER)).toThrowError(new Error('invalid phone number'))
-    })
+        expect(() => phoneNumberFactory.compose(INVALID_NUMBER)).toThrowError(new InvalidPhoneNumber(INVALID_NUMBER))
+    });
 
     test('with a valid number', () => {
         expect(phoneNumberFactory.compose(VALID_NUMBER)).toBe(VALID_NUMBER)

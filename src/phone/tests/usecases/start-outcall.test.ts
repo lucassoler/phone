@@ -7,6 +7,7 @@ import { ChannelId, ChannelStates } from "../../domain/aggregates/entities/Chann
 import { FakeChannels } from "../../infrastructure/services/FakeChannels";
 import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { CallStates } from "../../domain/aggregates/value-objects/CallStates";
+import { InvalidPhoneNumber } from "../../domain/exceptions/InvalidPhoneNumber";
 
 describe('start an outcall', () => {
     let phoneNumberFactory: FakePhoneNumberFactory;
@@ -32,6 +33,11 @@ describe('start an outcall', () => {
         verifyCustomerChannelHasBeenOriginated(ChannelId.from(DEFAULT_CHANNEL_ID));
     });
 
+    test('start an outcall with an invalid phone number', async () => {
+        phoneNumberFactory.throwError(new InvalidPhoneNumber("+00"));
+        await expect(createHandler().handle(createCommand("+00"))).rejects.toThrowError(new InvalidPhoneNumber("+00"));
+    });
+
     function verifyCustomerChannelHasBeenOriginated(channelId: ChannelId) {
         expect(channels.originatedChannels[0].channelId).toStrictEqual(channelId);
         expect(channels.originatedChannels[0].state).toStrictEqual(ChannelStates.Originated);
@@ -48,7 +54,7 @@ describe('start an outcall', () => {
         return new StartOutcallCommandHandler(phoneNumberFactory, uuidGenerator, repository, channels);
     }
 
-    function createCommand() {
-        return new StartOutcallCommand(DEFAULT_CUSTOMER);
+    function createCommand(phoneNumber: string = DEFAULT_CUSTOMER) {
+        return new StartOutcallCommand(phoneNumber);
     }
 });
