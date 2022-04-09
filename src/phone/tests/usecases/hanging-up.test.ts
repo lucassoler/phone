@@ -1,5 +1,4 @@
 import { ChannelId, ChannelStates } from "../../domain/aggregates/entities/Channel";
-import { Outcall } from "../../domain/aggregates/Outcall";
 import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { CallAlreadyHungUpException } from "../../domain/exceptions/CallAlreadyHungUpException";
 import { CallNotFoundException } from "../../domain/exceptions/CallNotFoundException";
@@ -7,43 +6,42 @@ import { CallRepositoryInMemory } from "../../infrastructure/repositories/callRe
 import { FakeChannels } from "../../infrastructure/services/FakeChannels";
 import { CallHangingUpCommandHandler, CallHangingUpCommand } from "../../usecases/commands/CallHangingUpCommandHandler";
 import { An } from "../helpers/An";
-import { DEFAULT_ID } from "../helpers/OutcallBuilder";
+import { DEFAULT_CHANNEL_ID, DEFAULT_ID } from "../helpers/OutcallBuilder";
 
 describe('Hanging up an outcall', () => {
     let repository: CallRepositoryInMemory;
     let channels: FakeChannels
 
     beforeEach(() => {
-        channels = new FakeChannels()
-        repository = new CallRepositoryInMemory(DEFAULT_ID, channels)
+        channels = new FakeChannels();
+        repository = new CallRepositoryInMemory(DEFAULT_ID, channels);
+        initCall();
     })
 
     test('outcall does not exists', async () => {
-        await expect(createHandler().handle(createCommand())).rejects.toThrow(new CallNotFoundException(CallId.from(DEFAULT_ID)));
+        removeCalls();
+        await expect(createHandler().handle(createCommand())).rejects.toThrow(new CallNotFoundException(DEFAULT_ID));
     });
 
 
     test('outcall hanging up', async () => {
-        const call = initCall();
         await createHandler().handle(createCommand());
-        await verifyCallIsHungUp(call);
+        await verifyCallIsHungUp(DEFAULT_ID);
     });
 
     test('call was already hang up', async () => {
-        const call = initCall(true);
-        await expect(createHandler().handle(createCommand())).rejects.toThrowError(new CallAlreadyHungUpException(call.id));
+        initCall(true);
+        await expect(createHandler().handle(createCommand())).rejects.toThrowError(new CallAlreadyHungUpException(DEFAULT_ID));
     });
 
     test('hanging up an outcall should update customer channel state', async () => {
-        const call = initCall();
         await createHandler().handle(createCommand());
-        await verifyCustomerChannelStateIsHungUp(call.id);
+        await verifyCustomerChannelStateIsHungUp(DEFAULT_ID);
     });
 
     test('hanging up an outcall should close customer channel', async () => {
-        const call = initCall();
         await createHandler().handle(createCommand());
-        verifyCustomerChannelHasBeenClosed(call.customer.channelId);
+        verifyCustomerChannelHasBeenClosed(DEFAULT_CHANNEL_ID);
     });
 
     function verifyCustomerChannelHasBeenClosed(channelId: ChannelId) {
@@ -55,8 +53,8 @@ describe('Hanging up an outcall', () => {
         expect(expectedCall.customer!.state).toBe(ChannelStates.HungUp);
     }
 
-    async function verifyCallIsHungUp(call: Outcall) {
-        const expectedCall = await repository.byId(call.id);
+    async function verifyCallIsHungUp(callId: CallId) {
+        const expectedCall = await repository.byId(callId);
         expect(expectedCall.isHangUp()).toBeTruthy();
     }
 
@@ -65,14 +63,17 @@ describe('Hanging up an outcall', () => {
     }
 
     function createCommand() {
-        return new CallHangingUpCommand(DEFAULT_ID);
+        return new CallHangingUpCommand(DEFAULT_ID.id);
+    }
+
+    function removeCalls() {
+        repository.events = [];
     }
 
     function initCall(isHungUp : boolean = false) {
         const builder = An.Outcall();
         if (isHungUp) builder.hungUp();        
         const call = builder.build();
-        repository.events.push(...call.uncommitedEvents);
-        return call;
+        repository.events = call.uncommitedEvents;
     }
 });

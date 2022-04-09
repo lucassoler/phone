@@ -6,5 +6,4 @@ export interface CallRepository {
     byId(callId: CallId): Promise<Outcall>;
     save(call: Outcall): Promise<void>;
     nextCallId(): CallId;
-    nextChannelId(): ChannelId;
 };

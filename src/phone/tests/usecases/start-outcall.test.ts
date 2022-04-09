@@ -20,17 +20,17 @@ describe('start an outcall', () => {
         uuidGenerator = new FakeUuidGenerator();
         channels = new FakeChannels()
         repository = new CallRepositoryInMemory(DEFAULT_ID, channels);
-        uuidGenerator.next(DEFAULT_CHANNEL_ID);
+        uuidGenerator.next(DEFAULT_CHANNEL_ID.id);
     });
 
     test('start an outcall', async () => {
         await createHandler().handle(createCommand());
-        await verifyOutcallStarted(CallId.from(DEFAULT_ID));
+        await verifyOutcallStarted(DEFAULT_ID);
     });
 
     test('start an outcall should originate customer channel', async () => {
         await createHandler().handle(createCommand());
-        verifyCustomerChannelHasBeenOriginated(ChannelId.from(DEFAULT_CHANNEL_ID));
+        verifyCustomerChannelHasBeenOriginated(DEFAULT_CHANNEL_ID);
     });
 
     test('start an outcall with an invalid phone number', async () => {

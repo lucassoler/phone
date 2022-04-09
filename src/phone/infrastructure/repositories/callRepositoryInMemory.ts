@@ -5,22 +5,17 @@ import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { CallNotFoundException } from "../../domain/exceptions/CallNotFoundException";
 import { CallRepository } from "../../domain/repositories/callRepository";
 import { Channels } from "../../domain/services/Channels";
+import { DEFAULT_ID } from "../../tests/helpers/OutcallBuilder";
 
 export class CallRepositoryInMemory implements CallRepository {
     outCalls: Array<Outcall> = new Array();
     events: Array<OutcallEvent> = new Array();
-    nextId: string = "1";
 
-    constructor(nextId: string = "1", private readonly channels: Channels) {
-        this.nextId = nextId;
-    } 
-
-    nextChannelId(): ChannelId {
-        return ChannelId.from(this.nextId);
+    constructor(private nextId: CallId = DEFAULT_ID, private readonly channels: Channels) {
     }
 
     nextCallId(): CallId {
-        return CallId.from(this.nextId)
+        return this.nextId;
     }
 
     byId(callId: CallId): Promise<Outcall> {
