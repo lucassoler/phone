@@ -1,4 +1,3 @@
-import { EventPublisher, InternalEventPublisher } from "../../../../common/EventPublisher";
 import { ChannelAnswered } from "../../../domain/aggregates/events/ChannelAnswered";
 import { CallId } from "../../../domain/aggregates/value-objects/CallId";
 import { CallRepositoryInMemory } from "../../../infrastructure/repositories/callRepositoryInMemory";
@@ -12,15 +11,18 @@ describe('Starting an ivr', () => {
     let repository: CallRepositoryInMemory;
     let channels: FakeChannels;
     let ivrRepository: IvrRepositoryInMemory;
-    let eventPublisher: EventPublisher;
 
     beforeEach(() => {
         channels = new FakeChannels();
         ivrRepository = new IvrRepositoryInMemory([An.Ivr().build()]);
         repository = new CallRepositoryInMemory(DEFAULT_ID, ivrRepository, channels);
-        eventPublisher = new InternalEventPublisher();
-        eventPublisher.registerHandlers({ [ChannelAnswered.name]: new StartIvrOnChannelAnsweredEventHandler(repository) })
         initCall();
+    });
+
+    test('should hang up call if there is no actions', async () => {
+        prepareIvrWithoutActions();
+        await createHandler().handle(createEvent());
+        await verifyCallIsHungUp(DEFAULT_ID)
     });
 
     test('say "Hello" to customer', async () => {
@@ -35,8 +37,21 @@ describe('Starting an ivr', () => {
         verifyMessageHasBennSaid([{ callId: DEFAULT_ID, message: "Welcome" }]);
     });
 
+    async function verifyCallIsHungUp(callId: CallId) {
+        const expectedCall = await repository.byId(callId);
+        expect(expectedCall.isHangUp()).toBeTruthy();
+    }
+
+    function prepareIvrWithoutActions() {
+        const ivr = An.Ivr()
+            .withoutActions()
+            .build();
+        ivrRepository.ivrs = [ivr];
+    }
+
     function prepareIvrSaying(message: string) {
         const ivr = An.Ivr()
+            .resetActions()
             .withAction(
                 An.IvrAction()
                     .saying(message)

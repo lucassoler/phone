@@ -9,7 +9,10 @@ export class Ivr {
 
     async start(call: Outcall): Promise<void> {
         const action = this.actions[0];
-        if (!action) return Promise.resolve();
+        if (!action) {
+            return await call.hangUp();
+        }
+
         if (action.type == IvrActionType.Say) {
             await call.say(action.message);
         }
