@@ -1,4 +1,7 @@
+import { EventPublisher, InternalEventPublisher } from "../../../common/EventPublisher";
 import { ChannelStates } from "../../domain/aggregates/entities/Channel";
+import { IvrState } from "../../domain/aggregates/entities/Ivr";
+import { ChannelAnswered } from "../../domain/aggregates/events/ChannelAnswered";
 import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { CallAlreadyHungUpException } from "../../domain/exceptions/CallAlreadyHungUpException";
 import { CallNotFoundException } from "../../domain/exceptions/CallNotFoundException";
@@ -7,6 +10,7 @@ import { CallRepositoryInMemory } from "../../infrastructure/repositories/callRe
 import { IvrRepositoryInMemory } from "../../infrastructure/repositories/IvrRepositoryInMemory";
 import { FakeChannels } from "../../infrastructure/services/FakeChannels";
 import { AnswerChannelCommand, AnswerChannelCommandHandler } from "../../usecases/commands/AnswerChannelCommandHandler";
+import { StartIvrOnChannelAnsweredEventHandler } from "../../usecases/events/StartIvrOnChannelAnsweredEventHandler";
 import { An } from "../helpers/An";
 import { DEFAULT_CHANNEL_ID, DEFAULT_ID } from "../helpers/OutcallBuilder";
 
@@ -14,17 +18,26 @@ describe('customer channel answer', () => {
     let repository: CallRepositoryInMemory;
     let channels: FakeChannels;
     let ivrRepository: IvrRepositoryInMemory;
+    let eventPublisher: EventPublisher;
 
     beforeEach(() => {
         channels = new FakeChannels();
         ivrRepository = new IvrRepositoryInMemory([An.Ivr().build()]);
         repository = new CallRepositoryInMemory(DEFAULT_ID, ivrRepository, channels);
+        eventPublisher = new InternalEventPublisher();
+        eventPublisher.registerHandlers({[ChannelAnswered.name]: new StartIvrOnChannelAnsweredEventHandler(repository)})
         initCall();
     });
 
     test('should set channel state to answered', async () => {
         await createHandler().handle(createCommand());
         await verifyCustomerChannelStateIsAnswered();
+    });
+
+    test('should start ivr', async () => {
+        await createHandler().handle(createCommand());
+        const expectedCall = await repository.byId(DEFAULT_ID);
+        expect(expectedCall.ivr.state).toBe(IvrState.Started);
     });
     
     describe('throw an error', () => {
@@ -50,7 +63,7 @@ describe('customer channel answer', () => {
     }
 
     function createHandler() {
-        return new AnswerChannelCommandHandler(repository);
+        return new AnswerChannelCommandHandler(repository, eventPublisher);
     }
 
     function createCommand(callId: CallId = DEFAULT_ID) {

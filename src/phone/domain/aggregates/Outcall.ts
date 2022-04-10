@@ -3,10 +3,11 @@ import { ChannelAlreadyAnsweredException } from "../exceptions/ChannelAlreadyAns
 import { IvrRepository } from "../repositories/IvrRepository";
 import { Channels } from "../services/Channels";
 import { Channel, ChannelStates } from "./entities/Channel";
-import { Ivr } from "./entities/Ivr";
+import { Ivr, IvrState } from "./entities/Ivr";
 import { ChannelAnswered } from "./events/ChannelAnswered";
 import { ChannelHungUp } from "./events/ChannelHungUp";
 import { ChannelOriginated } from "./events/ChannelOriginated";
+import { IvrStarted } from "./events/IvrStarted";
 import { OutcallEnded } from "./events/OutcallEnded";
 import { OutcallEvent } from "./events/OutcallEvent";
 import { OutcallStarted } from "./events/OutcallStarted";
@@ -60,6 +61,8 @@ export class Outcall {
                 this.applyChannelHungUpEvent(event);
             } else if (event instanceof ChannelAnswered) {
                 this.applyChannelAnsweredEvent(event);
+            } else if (event instanceof IvrStarted) {
+                this.applyIvrStartedEvent(event);
             }
         });
         this.events = events;
@@ -84,6 +87,10 @@ export class Outcall {
 
     applyOutcallEndedEvent(event: OutcallEnded) {
         this.state = CallStates.HungUp;
+    }
+
+    applyIvrStartedEvent(event: IvrStarted) {
+        this.ivr.state = IvrState.Started;
     }
     
     customerState(): ChannelStates {
@@ -121,6 +128,12 @@ export class Outcall {
         if (this.customer.state === ChannelStates.Answered) throw new ChannelAlreadyAnsweredException(this.id, this.customer.channelId);
         const event = new ChannelAnswered(this.id, this.customer);
         this.applyChannelAnsweredEvent(event);
+        this.uncommitedEvents.push(event);
+    }
+
+    startIvr() {
+        const event = new IvrStarted(this.id);
+        this.applyIvrStartedEvent(event);
         this.uncommitedEvents.push(event);
     }
 };
