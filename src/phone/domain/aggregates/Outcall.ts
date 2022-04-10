@@ -37,7 +37,7 @@ export class Outcall {
 
     static async rehydrate(events: OutcallEvent[], ivrRepository: IvrRepository, channels: Channels): Promise<Outcall> {
         const startedEvent = events.find(x => x instanceof OutcallStarted) as OutcallStarted;
-        const ivr = await ivrRepository.load(startedEvent.ivrId.id);
+        const ivr = await ivrRepository.load(startedEvent.ivrId);
         const call = new Outcall(startedEvent.id, startedEvent.customer, ivr, channels);
         call.applyEvents(events);
         return call;
@@ -131,10 +131,15 @@ export class Outcall {
         this.uncommitedEvents.push(event);
     }
 
-    startIvr() {
+    async startIvr() {
+        await this.ivr.start(this);
         const event = new IvrStarted(this.id);
         this.applyIvrStartedEvent(event);
         this.uncommitedEvents.push(event);
+    }
+
+    async say(message: string) {
+        await this.channels.say(this.id, message);
     }
 };
 

@@ -6,10 +6,10 @@ export class StartIvrOnChannelAnsweredEventHandler implements EventHandler {
     constructor(private readonly repository: CallRepository) {
         
     }
-    
+
     async handle(event: ChannelAnswered): Promise<void> {
         const call = await this.repository.byId(event.id);
-        call.startIvr();
+        await call.startIvr();
         return Promise.resolve();
     }
 }

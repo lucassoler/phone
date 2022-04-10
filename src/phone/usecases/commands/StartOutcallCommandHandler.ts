@@ -1,7 +1,7 @@
 import { Command } from "../../../common/command";
 import { CommandHandler } from "../../../common/commandHandler";
 import { Channel, ChannelId } from "../../domain/aggregates/entities/Channel";
-import { Ivr } from "../../domain/aggregates/entities/Ivr";
+import { Ivr, IvrId } from "../../domain/aggregates/entities/Ivr";
 import { Outcall } from "../../domain/aggregates/Outcall";
 import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { PhoneNumber } from "../../domain/aggregates/value-objects/PhoneNumber";
@@ -51,6 +51,6 @@ export class StartOutcallCommandHandler implements CommandHandler {
 }
 
 export class StartOutcallCommand implements Command {
-    constructor(readonly customer: string, readonly ivrId: string) {
+    constructor(readonly customer: string, readonly ivrId: IvrId) {
     }
 }  

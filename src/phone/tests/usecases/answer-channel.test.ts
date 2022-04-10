@@ -36,8 +36,7 @@ describe('customer channel answer', () => {
 
     test('should start ivr', async () => {
         await createHandler().handle(createCommand());
-        const expectedCall = await repository.byId(DEFAULT_ID);
-        expect(expectedCall.ivr.state).toBe(IvrState.Started);
+        await verifyIvrHasBeenStarted();
     });
     
     describe('throw an error', () => {
@@ -57,6 +56,11 @@ describe('customer channel answer', () => {
         });
     });
 
+    async function verifyIvrHasBeenStarted() {
+        const expectedCall = await repository.byId(DEFAULT_ID);
+        expect(expectedCall.ivr.state).toBe(IvrState.Started);
+    }
+    
     async function verifyCustomerChannelStateIsAnswered(callId: CallId = DEFAULT_ID) {
         const expectedCall = await repository.byId(callId);
         expect(expectedCall.customer.state).toBe(ChannelStates.Answered);

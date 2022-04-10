@@ -5,6 +5,7 @@ import { Channels } from "../../domain/services/Channels";
 export class FakeChannels implements Channels {
     readonly closedChannels: Array<ChannelId> = new Array();
     readonly originatedChannels: Array<Channel> = new Array();
+    readonly says: Array<{callId: CallId, message: string}> = new Array();
 
     close(channelId: ChannelId): Promise<void> {
         this.closedChannels.push(channelId);
@@ -13,6 +14,10 @@ export class FakeChannels implements Channels {
 
     dial(channel: Channel): Promise<void> {
         this.originatedChannels.push(channel);
+        return Promise.resolve();
+    }
+    say(callId: CallId, message: string): Promise<void> {
+        this.says.push({callId, message});
         return Promise.resolve();
     }
 } 

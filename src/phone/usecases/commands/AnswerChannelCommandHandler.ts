@@ -3,7 +3,6 @@ import { CommandHandler } from "../../../common/commandHandler";
 import { EventPublisher } from "../../../common/EventPublisher";
 import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { CallRepository } from "../../domain/repositories/callRepository";
-import { Channels } from "../../domain/services/Channels";
 
 export class AnswerChannelCommandHandler implements CommandHandler {
     constructor(private readonly repository: CallRepository,
@@ -16,7 +15,6 @@ export class AnswerChannelCommandHandler implements CommandHandler {
         await this.repository.save(call);
         await this.eventPublisher.publish(call.uncommitedEvents);
     }
-
 }
 
 export class AnswerChannelCommand implements Command {

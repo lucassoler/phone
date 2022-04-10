@@ -11,6 +11,7 @@ import { IvrRepositoryInMemory } from "../../infrastructure/repositories/IvrRepo
 import { An } from "../helpers/An";
 import { DEFAULT_IVR_ID } from "../helpers/IvrBuilder";
 import { IvrNotFound } from "../../domain/exceptions/IvrNotFound";
+import { IvrId, IvrState } from "../../domain/aggregates/entities/Ivr";
 
 describe('start an outcall', () => {
     let phoneNumberFactory: FakePhoneNumberFactory;
@@ -42,8 +43,7 @@ describe('start an outcall', () => {
 
     test('should load an irv', async () => {
         await createHandler().handle(createCommand());
-        const callPersisted = await repository.byId(DEFAULT_ID);
-        expect(callPersisted.ivr.id).toStrictEqual(DEFAULT_IVR_ID);
+        await verifyIvrHasBeenLoaded();
     });
 
     describe('throw an error', () => {
@@ -54,11 +54,16 @@ describe('start an outcall', () => {
         });
     
         test('with an invalid ivrId', async () => {
-            await expect(createHandler().handle(createCommand(DEFAULT_CUSTOMER, "not_found"))).rejects.toThrowError(new IvrNotFound("not_found"));
+            await expect(createHandler().handle(createCommand(DEFAULT_CUSTOMER, new IvrId("not_found")))).rejects.toThrowError(new IvrNotFound("not_found"));
             verifyChannelHasBeenHungUpOnError();
         });
     });
 
+    async function verifyIvrHasBeenLoaded() {
+        const callPersisted = await repository.byId(DEFAULT_ID);
+        expect(callPersisted.ivr.id).toStrictEqual(DEFAULT_IVR_ID);
+        expect(callPersisted.ivr.state).toStrictEqual(IvrState.Initied);
+    }
 
     function verifyChannelHasBeenHungUpOnError() {
         expect(channels.closedChannels[0]).toStrictEqual(DEFAULT_CHANNEL_ID);
@@ -84,7 +89,7 @@ describe('start an outcall', () => {
         return new StartOutcallCommandHandler(phoneNumberFactory, repository, channels, ivrRepository);
     }
 
-    function createCommand(phoneNumber: string = DEFAULT_CUSTOMER, ivrId: string = "1") {
+    function createCommand(phoneNumber: string = DEFAULT_CUSTOMER, ivrId: IvrId = DEFAULT_IVR_ID) {
         return new StartOutcallCommand(phoneNumber, ivrId);
     }
 });

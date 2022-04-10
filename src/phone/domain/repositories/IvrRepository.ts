@@ -1,6 +1,6 @@
-import { Ivr } from "../aggregates/entities/Ivr";
+import { Ivr, IvrId } from "../aggregates/entities/Ivr";
 
 export interface IvrRepository {
-    load(ivrId: string): Promise<Ivr>;
+    load(ivrId: IvrId): Promise<Ivr>;
 
 }

@@ -14,6 +14,7 @@ import { An } from "./An";
 export const DEFAULT_CUSTOMER = "+33601020304";
 export const DEFAULT_ID = CallId.from("d79d3049-1833-4938-8b5a-b4915c2a2b6e");
 export const DEFAULT_CHANNEL_ID = ChannelId.from("d79d3049-1833-4938-8b5a-b4915c2a2b6e");
+export const DEFAULT_CHANNEL = Channel.from(PhoneNumber.Generate(new FakePhoneNumberFactory(), DEFAULT_CUSTOMER), DEFAULT_CHANNEL_ID);
 
 export class OutcallBuilder {
     private phoneNumberFactory: PhoneNumberFactory;
@@ -22,7 +23,7 @@ export class OutcallBuilder {
     constructor() {
         this.phoneNumberFactory = new FakePhoneNumberFactory();
         this.channels = new FakeChannels();
-        this.customer = Channel.from(PhoneNumber.Generate(new FakePhoneNumberFactory(), DEFAULT_CUSTOMER), DEFAULT_CHANNEL_ID);
+        this.customer = DEFAULT_CHANNEL;
     }
 
     customer: Channel;
