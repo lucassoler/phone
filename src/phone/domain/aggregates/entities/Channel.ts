@@ -20,7 +20,7 @@ export class Channel {
     }
 
     async hangUp(channels: Channels): Promise<void> {
-        await channels.close(this);
+        await channels.close(this.channelId);
     }
 }
 

@@ -1,7 +1,9 @@
 import { CallAlreadyHungUpException } from "../exceptions/CallAlreadyHungUpException";
 import { ChannelAlreadyAnsweredException } from "../exceptions/ChannelAlreadyAnsweredException";
+import { IvrRepository } from "../repositories/IvrRepository";
 import { Channels } from "../services/Channels";
 import { Channel, ChannelStates } from "./entities/Channel";
+import { Ivr } from "./entities/Ivr";
 import { ChannelAnswered } from "./events/ChannelAnswered";
 import { ChannelHungUp } from "./events/ChannelHungUp";
 import { ChannelOriginated } from "./events/ChannelOriginated";
@@ -16,29 +18,32 @@ export class Outcall {
     id: CallId;
     state: CallStates = CallStates.Init;
     uncommitedEvents: Array<OutcallEvent> = new Array();
+    ivr: Ivr;
     private events: Array<OutcallEvent> = new Array();
 
-    private constructor(id: CallId, customer: Channel, private readonly channels: Channels) {
+    private constructor(id: CallId, customer: Channel, ivr: Ivr, private readonly channels: Channels) {
         this.id = id;
         this.customer = customer;
+        this.ivr = ivr;
     }
 
-    static from(id: CallId, customer: Channel, channels: Channels)
+    static from(id: CallId, customer: Channel, ivr: Ivr, channels: Channels)
     {
-        const call = new Outcall(id, customer, channels);
+        const call = new Outcall(id, customer, ivr, channels);
         call.init();
         return call;
     } 
 
-    static rehydrate(events: OutcallEvent[], channels: Channels): Outcall {
+    static async rehydrate(events: OutcallEvent[], ivrRepository: IvrRepository, channels: Channels): Promise<Outcall> {
         const startedEvent = events.find(x => x instanceof OutcallStarted) as OutcallStarted;
-        const call = new Outcall(startedEvent.id, startedEvent.customer, channels);
+        const ivr = await ivrRepository.load(startedEvent.ivrId.id);
+        const call = new Outcall(startedEvent.id, startedEvent.customer, ivr, channels);
         call.applyEvents(events);
         return call;
     }
 
     init() {
-        const event = new OutcallStarted(this.id, this.customer);
+        const event = new OutcallStarted(this.id, this.ivr.id, this.customer);
         this.applyOutcallStartedEvent(event);
         this.uncommitedEvents.push(event);
     }

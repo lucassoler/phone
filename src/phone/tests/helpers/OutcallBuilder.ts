@@ -8,6 +8,8 @@ import { FakeChannels } from "../../infrastructure/services/FakeChannels";
 import { Channels } from "../../domain/services/Channels";
 import { OutcallEnded } from "../../domain/aggregates/events/OutcallEnded";
 import { ChannelAnswered } from "../../domain/aggregates/events/ChannelAnswered";
+import { Ivr } from "../../domain/aggregates/entities/Ivr";
+import { An } from "./An";
 
 export const DEFAULT_CUSTOMER = "+33601020304";
 export const DEFAULT_ID = CallId.from("d79d3049-1833-4938-8b5a-b4915c2a2b6e");
@@ -24,6 +26,7 @@ export class OutcallBuilder {
     }
 
     customer: Channel;
+    ivr: Ivr = An.Ivr().build();
     id: CallId = DEFAULT_ID
     isHungUp = false
     isAnswered = false
@@ -42,14 +45,14 @@ export class OutcallBuilder {
         this.isHungUp = true;
         return this;
     }
-    
+
     answered(): OutcallBuilder {
         this.isAnswered = true;
         return this;
     }
 
     build() {
-        const call = Outcall.from(this.id, this.customer, this.channels);
+        const call = Outcall.from(this.id, this.customer, this.ivr, this.channels);
         if (this.isHungUp) call.uncommitedEvents.push(new OutcallEnded(this.id));
         if (this.isAnswered) call.uncommitedEvents.push(new ChannelAnswered(this.id, this.customer));
         return call;

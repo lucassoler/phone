@@ -3,6 +3,7 @@ import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { CallAlreadyHungUpException } from "../../domain/exceptions/CallAlreadyHungUpException";
 import { CallNotFoundException } from "../../domain/exceptions/CallNotFoundException";
 import { CallRepositoryInMemory } from "../../infrastructure/repositories/callRepositoryInMemory";
+import { IvrRepositoryInMemory } from "../../infrastructure/repositories/IvrRepositoryInMemory";
 import { FakeChannels } from "../../infrastructure/services/FakeChannels";
 import { CallHangingUpCommandHandler, CallHangingUpCommand } from "../../usecases/commands/CallHangingUpCommandHandler";
 import { An } from "../helpers/An";
@@ -11,10 +12,12 @@ import { DEFAULT_CHANNEL_ID, DEFAULT_ID } from "../helpers/OutcallBuilder";
 describe('Hanging up an outcall', () => {
     let repository: CallRepositoryInMemory;
     let channels: FakeChannels
+    let ivrRepository: IvrRepositoryInMemory;
 
     beforeEach(() => {
         channels = new FakeChannels();
-        repository = new CallRepositoryInMemory(DEFAULT_ID, channels);
+        ivrRepository = new IvrRepositoryInMemory([An.Ivr().build()]);
+        repository = new CallRepositoryInMemory(DEFAULT_ID, ivrRepository, channels);
         initCall();
     })
 
@@ -47,7 +50,7 @@ describe('Hanging up an outcall', () => {
     });
 
     function verifyCustomerChannelHasBeenClosed(channelId: ChannelId) {
-        expect(channels.closedChannels[0].channelId).toBe(channelId);
+        expect(channels.closedChannels[0]).toStrictEqual(channelId);
     }
 
     async function verifyCustomerChannelStateIsHungUp(callId: CallId) {

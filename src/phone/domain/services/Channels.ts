@@ -1,6 +1,6 @@
-import { Channel } from "../aggregates/entities/Channel";
+import { Channel, ChannelId } from "../aggregates/entities/Channel";
 
 export interface Channels {
-    close(channel: Channel): Promise<void>;
+    close(channelId: ChannelId): Promise<void>;
     dial(channel: Channel): Promise<void>;
 }

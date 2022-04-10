@@ -4,6 +4,7 @@ import { CallAlreadyHungUpException } from "../../domain/exceptions/CallAlreadyH
 import { CallNotFoundException } from "../../domain/exceptions/CallNotFoundException";
 import { ChannelAlreadyAnsweredException } from "../../domain/exceptions/ChannelAlreadyAnsweredException";
 import { CallRepositoryInMemory } from "../../infrastructure/repositories/callRepositoryInMemory";
+import { IvrRepositoryInMemory } from "../../infrastructure/repositories/IvrRepositoryInMemory";
 import { FakeChannels } from "../../infrastructure/services/FakeChannels";
 import { AnswerChannelCommand, AnswerChannelCommandHandler } from "../../usecases/commands/AnswerChannelCommandHandler";
 import { An } from "../helpers/An";
@@ -12,10 +13,12 @@ import { DEFAULT_CHANNEL_ID, DEFAULT_ID } from "../helpers/OutcallBuilder";
 describe('customer channel answer', () => {
     let repository: CallRepositoryInMemory;
     let channels: FakeChannels;
+    let ivrRepository: IvrRepositoryInMemory;
 
     beforeEach(() => {
         channels = new FakeChannels();
-        repository = new CallRepositoryInMemory(DEFAULT_ID, channels);
+        ivrRepository = new IvrRepositoryInMemory([An.Ivr().build()]);
+        repository = new CallRepositoryInMemory(DEFAULT_ID, ivrRepository, channels);
         initCall();
     });
 
