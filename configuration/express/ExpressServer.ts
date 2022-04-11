@@ -16,6 +16,9 @@ export class ExpressServer {
         server.set('port', process.env.API_PORT || 8801);
         server.use(helmet());
 
+
+        server.use(ExpressMiddlewares.configureServices());
+
         if (process.env.NODE_ENV !== "production") {
             server.use(ExpressMiddlewares.prepareResponseHeader());
             server.use(cors());

@@ -6,7 +6,7 @@ dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 const expressServer = new ExpressServer().create();
 
 const server = expressServer.listen(expressServer.get("port"), () => {
-  console.info(`Application stats on port ${expressServer.get("port")}`, { type: "SYSTEM" });
+  console.info(`Application starts on port ${expressServer.get("port")}`, { type: "SYSTEM" });
 });
 
 process.on("SIGTERM", () => {
