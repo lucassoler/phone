@@ -1,4 +1,3 @@
-import { ChannelId } from "../../domain/aggregates/entities/Channel";
 import { OutcallEvent } from "../../domain/aggregates/events/OutcallEvent";
 import { Outcall } from "../../domain/aggregates/Outcall";
 import { CallId } from "../../domain/aggregates/value-objects/CallId";
@@ -6,13 +5,15 @@ import { CallNotFoundException } from "../../domain/exceptions/CallNotFoundExcep
 import { CallRepository } from "../../domain/repositories/callRepository";
 import { IvrRepository } from "../../domain/repositories/IvrRepository";
 import { Channels } from "../../domain/services/Channels";
-import { DEFAULT_ID } from "../../tests/helpers/OutcallBuilder";
+import { DEFAULT_ID } from "../../tests/helpers/builders/OutcallBuilder";
 
 export class CallRepositoryInMemory implements CallRepository {
     outCalls: Array<Outcall> = new Array();
     events: Array<OutcallEvent> = new Array();
 
-    constructor(private nextId: CallId = DEFAULT_ID, private readonly ivrRepository: IvrRepository, private readonly channels: Channels) {
+    constructor(private nextId: CallId = DEFAULT_ID, 
+        private readonly ivrRepository: IvrRepository, 
+        private readonly channels: Channels) {
     }
 
     nextCallId(): CallId {

@@ -3,7 +3,7 @@ import { AwesomePhoneNumberFactory } from "../infrastructure/factories/awesomePh
 import { CallRepositoryInMemory } from "../infrastructure/repositories/callRepositoryInMemory"
 import { IvrRepositoryInMemory } from "../infrastructure/repositories/IvrRepositoryInMemory"
 import { FakeChannels } from "../infrastructure/services/FakeChannels"
-import { DEFAULT_ID } from "../tests/helpers/OutcallBuilder"
+import { DEFAULT_ID } from "../tests/helpers/builders/OutcallBuilder"
 import { StartOutcallCommand, StartOutcallCommandHandler } from "../usecases/commands/StartOutcallCommandHandler"
 
 export const commandHandlers = (): RegisteredCommandHandler => ({
