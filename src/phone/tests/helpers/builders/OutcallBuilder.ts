@@ -1,14 +1,14 @@
-import { CallId } from "../../domain/aggregates/value-objects/CallId";
-import { PhoneNumber } from "../../domain/aggregates/value-objects/PhoneNumber";
-import { FakePhoneNumberFactory } from "../../infrastructure/factories/fakePhoneNumberFactory";
-import { PhoneNumberFactory } from "../../domain/factories/phoneNumberFactory";
-import { Channel, ChannelId } from "../../domain/aggregates/entities/Channel";
-import { Outcall } from "../../domain/aggregates/Outcall";
-import { FakeChannels } from "../../infrastructure/services/FakeChannels";
-import { Channels } from "../../domain/services/Channels";
-import { OutcallEnded } from "../../domain/aggregates/events/OutcallEnded";
-import { ChannelAnswered } from "../../domain/aggregates/events/ChannelAnswered";
-import { Ivr } from "../../domain/aggregates/entities/Ivr";
+import { ChannelId, Channel } from "../../../domain/aggregates/entities/Channel";
+import { Ivr } from "../../../domain/aggregates/entities/Ivr";
+import { ChannelAnswered } from "../../../domain/aggregates/events/ChannelAnswered";
+import { OutcallEnded } from "../../../domain/aggregates/events/OutcallEnded";
+import { Outcall } from "../../../domain/aggregates/Outcall";
+import { CallId } from "../../../domain/aggregates/value-objects/CallId";
+import { PhoneNumber } from "../../../domain/aggregates/value-objects/PhoneNumber";
+import { PhoneNumberFactory } from "../../../domain/factories/phoneNumberFactory";
+import { Channels } from "../../../domain/services/Channels";
+import { FakePhoneNumberFactory } from "../../../infrastructure/factories/fakePhoneNumberFactory";
+import { FakeChannels } from "../../../infrastructure/services/FakeChannels";
 import { An } from "./An";
 
 export const DEFAULT_CUSTOMER = "+33601020304";

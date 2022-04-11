@@ -11,8 +11,8 @@ import { IvrRepositoryInMemory } from "../../infrastructure/repositories/IvrRepo
 import { FakeChannels } from "../../infrastructure/services/FakeChannels";
 import { AnswerChannelCommand, AnswerChannelCommandHandler } from "../../usecases/commands/AnswerChannelCommandHandler";
 import { StartIvrOnChannelAnsweredEventHandler } from "../../usecases/events/StartIvrOnChannelAnsweredEventHandler";
-import { An } from "../helpers/An";
-import { DEFAULT_CHANNEL_ID, DEFAULT_ID } from "../helpers/OutcallBuilder";
+import { An } from "../helpers/builders/An";
+import { DEFAULT_ID, DEFAULT_CHANNEL_ID } from "../helpers/builders/OutcallBuilder";
 
 describe('customer channel answer', () => {
     let repository: CallRepositoryInMemory;
@@ -60,7 +60,7 @@ describe('customer channel answer', () => {
         const expectedCall = await repository.byId(DEFAULT_ID);
         expect(expectedCall.ivr.state).toBe(IvrState.Started);
     }
-    
+
     async function verifyCustomerChannelStateIsAnswered(callId: CallId = DEFAULT_ID) {
         const expectedCall = await repository.byId(callId);
         expect(expectedCall.customer.state).toBe(ChannelStates.Answered);

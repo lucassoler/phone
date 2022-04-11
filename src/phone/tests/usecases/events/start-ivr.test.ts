@@ -4,8 +4,8 @@ import { CallRepositoryInMemory } from "../../../infrastructure/repositories/cal
 import { IvrRepositoryInMemory } from "../../../infrastructure/repositories/IvrRepositoryInMemory";
 import { FakeChannels } from "../../../infrastructure/services/FakeChannels";
 import { StartIvrOnChannelAnsweredEventHandler } from "../../../usecases/events/StartIvrOnChannelAnsweredEventHandler";
-import { An } from "../../helpers/An";
-import { DEFAULT_CHANNEL, DEFAULT_ID } from "../../helpers/OutcallBuilder";
+import { An } from "../../helpers/builders/An";
+import { DEFAULT_CHANNEL, DEFAULT_ID } from "../../helpers/builders/OutcallBuilder";
 
 describe('Starting an ivr', () => {
     let repository: CallRepositoryInMemory;

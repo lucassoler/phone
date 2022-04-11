@@ -1,4 +1,4 @@
-import { IvrAction, IvrActionType } from "../../domain/aggregates/entities/Ivr";
+import { IvrActionType, IvrAction } from "../../../domain/aggregates/entities/Ivr";
 
 export class IvrActionBuilder {
     private type: IvrActionType = IvrActionType.Say;

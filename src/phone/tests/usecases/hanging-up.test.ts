@@ -6,8 +6,8 @@ import { CallRepositoryInMemory } from "../../infrastructure/repositories/callRe
 import { IvrRepositoryInMemory } from "../../infrastructure/repositories/IvrRepositoryInMemory";
 import { FakeChannels } from "../../infrastructure/services/FakeChannels";
 import { CallHangingUpCommandHandler, CallHangingUpCommand } from "../../usecases/commands/CallHangingUpCommandHandler";
-import { An } from "../helpers/An";
-import { DEFAULT_CHANNEL_ID, DEFAULT_ID } from "../helpers/OutcallBuilder";
+import { An } from "../helpers/builders/An";
+import { DEFAULT_ID, DEFAULT_CHANNEL_ID } from "../helpers/builders/OutcallBuilder";
 
 describe('Hanging up an outcall', () => {
     let repository: CallRepositoryInMemory;

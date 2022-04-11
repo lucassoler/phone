@@ -1,4 +1,4 @@
-import { Ivr, IvrAction, IvrId } from "../../domain/aggregates/entities/Ivr";
+import { IvrId, IvrAction, Ivr } from "../../../domain/aggregates/entities/Ivr";
 import { An } from "./An";
 
 export const DEFAULT_IVR_ID: IvrId = new IvrId("1");

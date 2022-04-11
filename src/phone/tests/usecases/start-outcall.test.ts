@@ -1,6 +1,5 @@
 import { FakePhoneNumberFactory } from "../../infrastructure/factories/fakePhoneNumberFactory";
 import { CallRepositoryInMemory } from "../../infrastructure/repositories/callRepositoryInMemory";
-import { DEFAULT_CHANNEL_ID, DEFAULT_CUSTOMER, DEFAULT_ID } from "../helpers/OutcallBuilder";
 import { StartOutcallCommand, StartOutcallCommandHandler } from "../../usecases/commands/StartOutcallCommandHandler";
 import { ChannelId, ChannelStates } from "../../domain/aggregates/entities/Channel";
 import { FakeChannels } from "../../infrastructure/services/FakeChannels";
@@ -8,10 +7,11 @@ import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { CallStates } from "../../domain/aggregates/value-objects/CallStates";
 import { InvalidPhoneNumber } from "../../domain/exceptions/InvalidPhoneNumber";
 import { IvrRepositoryInMemory } from "../../infrastructure/repositories/IvrRepositoryInMemory";
-import { An } from "../helpers/An";
-import { DEFAULT_IVR_ID } from "../helpers/IvrBuilder";
+import { An } from "../helpers/builders/An";
 import { IvrNotFound } from "../../domain/exceptions/IvrNotFound";
 import { IvrId, IvrState } from "../../domain/aggregates/entities/Ivr";
+import { DEFAULT_IVR_ID } from "../helpers/builders/IvrBuilder";
+import { DEFAULT_ID, DEFAULT_CHANNEL_ID, DEFAULT_CUSTOMER } from "../helpers/builders/OutcallBuilder";
 
 describe('start an outcall', () => {
     let phoneNumberFactory: FakePhoneNumberFactory;
