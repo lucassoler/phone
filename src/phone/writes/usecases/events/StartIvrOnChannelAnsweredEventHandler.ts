@@ -1,4 +1,4 @@
-import { EventHandler } from "../../../common/eventHandler";
+import { EventHandler } from "../../../../common/eventHandler";
 import { ChannelAnswered } from "../../domain/aggregates/events/ChannelAnswered";
 import { CallRepository } from "../../domain/repositories/callRepository";
 

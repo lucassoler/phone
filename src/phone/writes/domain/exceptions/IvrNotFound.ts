@@ -1,4 +1,4 @@
-import { NotFoundException } from "../../../common/domainException";
+import { NotFoundException } from "../../../../common/domainException";
 import { PhoneErrorCodes } from "./PhoneErrorCodes";
 
 export class IvrNotFound extends NotFoundException {

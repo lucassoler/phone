@@ -1,5 +1,5 @@
-import { Command } from "../../../common/command";
-import { CommandHandler } from "../../../common/commandHandler";
+import { Command } from "../../../../common/command";
+import { CommandHandler } from "../../../../common/commandHandler";
 import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { CallRepository } from "../../domain/repositories/callRepository";
 

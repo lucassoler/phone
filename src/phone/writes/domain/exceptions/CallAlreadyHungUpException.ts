@@ -1,4 +1,4 @@
-import { BadRequestException } from "../../../common/domainException";
+import { BadRequestException } from "../../../../common/domainException";
 import { CallId } from "../aggregates/value-objects/CallId";
 import { PhoneErrorCodes } from "./PhoneErrorCodes";
 

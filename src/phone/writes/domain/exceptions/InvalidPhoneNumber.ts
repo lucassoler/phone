@@ -1,4 +1,4 @@
-import { BadRequestException } from "../../../common/domainException";
+import { BadRequestException } from "../../../../common/domainException";
 import { PhoneErrorCodes } from "./PhoneErrorCodes";
 
 export class InvalidPhoneNumber extends BadRequestException {

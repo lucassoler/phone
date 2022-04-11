@@ -1,4 +1,4 @@
-import { PhoneErrorCodes } from "../phone/domain/exceptions/PhoneErrorCodes";
+import { PhoneErrorCodes } from "../phone/writes/domain/exceptions/PhoneErrorCodes";
 
 export abstract class DomainException extends Error {
     code: PhoneErrorCodes;

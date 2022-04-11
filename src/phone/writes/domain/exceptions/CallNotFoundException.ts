@@ -1,4 +1,4 @@
-import { NotFoundException } from "../../../common/domainException";
+import { NotFoundException } from "../../../../common/domainException";
 import { CallId } from "../aggregates/value-objects/CallId";
 import { PhoneErrorCodes } from "./PhoneErrorCodes";
 

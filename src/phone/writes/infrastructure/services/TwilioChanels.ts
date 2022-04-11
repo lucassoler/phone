@@ -5,7 +5,7 @@ import { VALID_FROM } from "../../tests/integration/channels/twilio/twilio-start
 import * as twilio from 'twilio';
 
 
-export class TwilioChanels implements Channels {
+export class TwilioChannels implements Channels {
     private readonly client: twilio.Twilio;
 
     constructor() {    
@@ -24,6 +24,7 @@ export class TwilioChanels implements Channels {
     async dial(channel: Channel): Promise<void> {
         const call = await this.client.calls
             .create({
+                url: 'http://demo.twilio.com/docs/voice.xml',
                 to: channel.number.number,
                 from: VALID_FROM
             });

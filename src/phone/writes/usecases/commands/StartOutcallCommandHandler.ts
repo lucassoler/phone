@@ -1,5 +1,5 @@
-import { Command } from "../../../common/command";
-import { CommandHandler } from "../../../common/commandHandler";
+import { Command } from "../../../../common/command";
+import { CommandHandler } from "../../../../common/commandHandler";
 import { Channel, ChannelId } from "../../domain/aggregates/entities/Channel";
 import { Ivr, IvrId } from "../../domain/aggregates/entities/Ivr";
 import { Outcall } from "../../domain/aggregates/Outcall";

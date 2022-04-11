@@ -1,6 +1,6 @@
-import { Command } from "../../../common/command";
-import { CommandHandler } from "../../../common/commandHandler";
-import { EventPublisher } from "../../../common/EventPublisher";
+import { Command } from "../../../../common/command";
+import { CommandHandler } from "../../../../common/commandHandler";
+import { EventPublisher } from "../../../../common/EventPublisher";
 import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { CallRepository } from "../../domain/repositories/callRepository";
 

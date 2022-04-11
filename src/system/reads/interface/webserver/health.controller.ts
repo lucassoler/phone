@@ -1,7 +1,7 @@
-import {NextFunction, Request, Response} from 'express';
+import {Request, Response} from 'express';
 
 export const healthController = () => {
-    return async (request: Request, response: Response, next: NextFunction) => {
+    return async (request: Request, response: Response) => {
         response.status(200).json({});
     }
 }

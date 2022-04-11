@@ -1,4 +1,4 @@
-import { DomainEvent } from "../../../../common/domainEvent";
+import { DomainEvent } from "../../../../../common/domainEvent";
 import { CallId } from "../value-objects/CallId";
 
 export class OutcallEvent extends DomainEvent {

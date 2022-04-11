@@ -1,4 +1,4 @@
-import { EventPublisher, InternalEventPublisher } from "../../../common/EventPublisher";
+import { EventPublisher, InternalEventPublisher } from "../../../../common/EventPublisher";
 import { ChannelStates } from "../../domain/aggregates/entities/Channel";
 import { IvrState } from "../../domain/aggregates/entities/Ivr";
 import { ChannelAnswered } from "../../domain/aggregates/events/ChannelAnswered";
