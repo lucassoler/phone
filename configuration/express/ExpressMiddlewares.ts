@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
+import { Dependencies } from "../services/serviceLocator";
 
 export class ExpressMiddlewares {
-    static configureServices() {
+    static configureServices(dependencies: Dependencies) {
         return (request: Request, response: Response, next: NextFunction): void => {
             next();
         }

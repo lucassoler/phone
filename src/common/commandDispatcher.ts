@@ -36,8 +36,8 @@ export class InternalCommandDispatcher implements CommandDispatcher {
     }
 
     async dispatch<R = void>(command: Command): Promise<R> {
-        if (this.handlers[typeof command] === undefined) {
-            throw new ErrorCommandNotRegistered(typeof command);
+        if (this.handlers[command.constructor.name] === undefined) {
+            throw new ErrorCommandNotRegistered(command.constructor.name);
         }
 
         for (let index = 0; index < this.middlewares.length; index++) {
@@ -45,6 +45,6 @@ export class InternalCommandDispatcher implements CommandDispatcher {
             await middleware.handle(command);
         }
 
-        return await this.handlers[typeof command].execute(command);
+        return await this.handlers[command.constructor.name].handle(command);
     }
 }

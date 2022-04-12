@@ -1,12 +1,10 @@
 import dotenv from "dotenv";
 import { ExpressServer } from "./configuration/express/ExpressServer";
-import { serviceContainer } from "./configuration/services/serviceContainer";
+import { serviceLocator } from "./configuration/services/serviceLocator";
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
-const services = serviceContainer();
-const scope = services.createScope();
-
+const services = serviceLocator();
 
 const expressServer = new ExpressServer().create(services);
 
