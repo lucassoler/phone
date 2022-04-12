@@ -7,7 +7,6 @@ import { TwilioChannels } from "../../../../infrastructure/services/TwilioChanel
 export const VALID_FROM = '+15005550006';
 const VALID_TO = '+15005550006';
 
-
 describe('Twilio - start outcall', () => {
     let channels: TwilioChannels;
     let phoneNumberFactory: FakePhoneNumberFactory;

@@ -4,18 +4,18 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { ExpressMiddlewares } from './ExpressMiddlewares';
 import { router } from './ExpressRouter';
+import { AwilixContainer } from "awilix";
 
-export class ExpressServer {
+  export class ExpressServer {
     constructor() {
 
     }
 
-    create(): Express {
+    create(services: AwilixContainer): Express {
         const server = express();
 
         server.set('port', process.env.API_PORT || 8801);
         server.use(helmet());
-
 
         server.use(ExpressMiddlewares.configureServices());
 
@@ -27,7 +27,7 @@ export class ExpressServer {
         server.use(bodyParser.json());
         server.use(bodyParser.urlencoded({extended: true}));
 
-        server.use('/api', router());
+        server.use('/api', router(services));
 
         //server.use(ExpressMiddlewares.postErrorHandling(this.dependencies.logger));
 

@@ -1,9 +1,7 @@
 import { ChannelId, Channel } from "../../domain/aggregates/entities/Channel";
 import { CallId } from "../../domain/aggregates/value-objects/CallId";
 import { Channels } from "../../domain/services/Channels";
-import { VALID_FROM } from "../../tests/integration/channels/twilio/twilio-start-outcall.test";
 import * as twilio from 'twilio';
-
 
 export class TwilioChannels implements Channels {
     private readonly client: twilio.Twilio;
@@ -26,7 +24,7 @@ export class TwilioChannels implements Channels {
             .create({
                 url: 'http://demo.twilio.com/docs/voice.xml',
                 to: channel.number.number,
-                from: VALID_FROM
+                from: process.env.VOICE_DEFAULT_FROM || ""
             });
 
         return Promise.resolve();
