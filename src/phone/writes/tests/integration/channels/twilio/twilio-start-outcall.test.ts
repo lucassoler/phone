@@ -3,9 +3,10 @@ import { PhoneNumber } from "../../../../domain/aggregates/value-objects/PhoneNu
 import { FakePhoneNumberFactory } from "../../../../infrastructure/factories/fakePhoneNumberFactory";
 import { DEFAULT_CHANNEL_ID } from "../../../helpers/builders/OutcallBuilder";
 import { TwilioChannels } from "../../../../infrastructure/services/TwilioChanels";
+import { InvalidPhoneNumber } from "../../../../domain/exceptions/InvalidPhoneNumber";
 
-export const VALID_FROM = '+15005550006';
 const VALID_TO = '+15005550006';
+const INVALID_TO = '+15005550001';
 
 describe('Twilio - start outcall', () => {
     let channels: TwilioChannels;
@@ -16,8 +17,13 @@ describe('Twilio - start outcall', () => {
         phoneNumberFactory = new FakePhoneNumberFactory();
     });
     
-    test('should dial number', async () => {
+    test('should dial valid number works', async () => {
         const channel = Channel.from(PhoneNumber.Generate(phoneNumberFactory, VALID_TO), DEFAULT_CHANNEL_ID);
         await channels.dial(channel);
+    });
+    
+    test('dial an invalid number should throw an error', async () => {
+        const channel = Channel.from(PhoneNumber.Generate(phoneNumberFactory, INVALID_TO), DEFAULT_CHANNEL_ID);
+        await expect(channels.dial(channel)).rejects.toThrowError(new InvalidPhoneNumber(INVALID_TO));
     });
 });
