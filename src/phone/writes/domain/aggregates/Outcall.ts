@@ -1,5 +1,6 @@
 import { CallAlreadyHungUpException } from "../exceptions/CallAlreadyHungUpException";
 import { ChannelAlreadyAnsweredException } from "../exceptions/ChannelAlreadyAnsweredException";
+import { InvalidOutcallStateForAction } from "../exceptions/InvalidOutcallStateForAction";
 import { IvrRepository } from "../repositories/IvrRepository";
 import { Channels } from "../services/Channels";
 import { Channel, ChannelStates } from "./entities/Channel";
@@ -20,7 +21,6 @@ export class Outcall {
     state: CallStates = CallStates.Init;
     uncommitedEvents: Array<OutcallEvent> = new Array();
     ivr: Ivr;
-    private events: Array<OutcallEvent> = new Array();
 
     private constructor(id: CallId, customer: Channel, ivr: Ivr, private readonly channels: Channels) {
         this.id = id;
@@ -65,7 +65,6 @@ export class Outcall {
                 this.applyIvrStartedEvent(event);
             }
         });
-        this.events = events;
     }
 
     applyOutcallStartedEvent(event: OutcallStarted) {
@@ -83,6 +82,7 @@ export class Outcall {
 
     applyChannelAnsweredEvent(event: ChannelAnswered) {
         this.customer.state = ChannelStates.Answered;
+        this.state = CallStates.Answered;
     }
 
     applyOutcallEndedEvent(event: OutcallEnded) {
@@ -102,18 +102,44 @@ export class Outcall {
     }
 
     async start(): Promise<void> {
-        await this.customer.dial(this.channels);
-        const event = new ChannelOriginated(this.id, this.customer);
-        this.uncommitedEvents.push(event);
-        this.applyChannelOriginatedEvent(event);
+        switch (this.state) {
+            case CallStates.Init:
+                await this.customer.dial(this.channels);
+                const event = new ChannelOriginated(this.id, this.customer);
+                this.uncommitedEvents.push(event);
+                this.applyChannelOriginatedEvent(event);
+                break;
+            default:
+                throw new InvalidOutcallStateForAction();
+        } 
     }
 
     async hangUp(): Promise<void> {
-        if (this.isHangUp()) throw new CallAlreadyHungUpException(this.id);
-        await this.closeCustomerChannel();
-        const event = new OutcallEnded(this.id);
-        this.applyOutcallEndedEvent(event);
-        this.uncommitedEvents.push(event);
+        switch (this.state) {
+            case CallStates.Answered:
+            case CallStates.Init:
+                await this.closeCustomerChannel();
+                const event = new OutcallEnded(this.id);
+                this.applyOutcallEndedEvent(event);
+                this.uncommitedEvents.push(event);
+                break;
+            case CallStates.HungUp:
+                throw new CallAlreadyHungUpException(this.id);
+            default:
+                throw new InvalidOutcallStateForAction();
+        } 
+    }
+
+    answerCustomer() {
+        switch (this.state) {
+            case CallStates.Init: 
+                const event = new ChannelAnswered(this.id, this.customer);
+                this.applyChannelAnsweredEvent(event);
+                this.uncommitedEvents.push(event);
+                break;
+            default:
+                throw new InvalidOutcallStateForAction();
+        } 
     }
 
     private async closeCustomerChannel() {
@@ -123,19 +149,17 @@ export class Outcall {
         this.uncommitedEvents.push(event);
     }
 
-    answerCustomer() {
-        if (this.isHangUp()) throw new CallAlreadyHungUpException(this.id);
-        if (this.customer.state === ChannelStates.Answered) throw new ChannelAlreadyAnsweredException(this.id, this.customer.channelId);
-        const event = new ChannelAnswered(this.id, this.customer);
-        this.applyChannelAnsweredEvent(event);
-        this.uncommitedEvents.push(event);
-    }
-
     async startIvr() {
-        await this.ivr.start(this);
-        const event = new IvrStarted(this.id);
-        this.applyIvrStartedEvent(event);
-        this.uncommitedEvents.push(event);
+        switch (this.state) {
+            case CallStates.Answered: 
+                await this.ivr.start(this);
+                const event = new IvrStarted(this.id);
+                this.applyIvrStartedEvent(event);
+                this.uncommitedEvents.push(event);
+                break;
+            default:
+                throw new InvalidOutcallStateForAction();
+        }  
     }
 
     async say(message: string) {

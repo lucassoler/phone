@@ -1,4 +1,5 @@
 export enum CallStates {
     HungUp = "HungUp",
-    Init = "Init"
+    Init = "Init",
+    Answered = "Answered"
 }

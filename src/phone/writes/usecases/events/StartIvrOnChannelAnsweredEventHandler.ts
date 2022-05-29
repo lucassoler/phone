@@ -9,7 +9,6 @@ export class StartIvrOnChannelAnsweredEventHandler implements EventHandler {
 
     async handle(event: ChannelAnswered): Promise<void> {
         const call = await this.repository.byId(event.id);
-        console.log('start ivr');
         await call.startIvr();
         await this.repository.save(call);
     }
